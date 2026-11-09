@@ -39,19 +39,26 @@ export class DbAccess {
     return this.ready ? this.provider() : null;
   }
 
-  async initialize(attempts = 3, delayMs = 2000, retryEveryMs = 15_000): Promise<boolean> {
+  /**
+   * Runs migrations + seed once before the server listens (waiting at most `waitMs`). When Postgres is not
+   * reachable the API still starts and keeps retrying in the background.
+   */
+  async initialize(waitMs = 20_000, retryEveryMs = 10_000): Promise<boolean> {
     if (!resolveDatabaseUrl()) {
       this.logger.warn('[db] no database URL configured, running without Postgres');
       return false;
     }
-    for (let attempt = 1; attempt <= attempts; attempt++) {
-      if (await this.attempt()) return true;
-      if (attempt < attempts) await new Promise((r) => setTimeout(r, delayMs));
-    }
-    this.logger.warn(`[db] unavailable, retrying every ${Math.round(retryEveryMs / 1000)}s in the background`);
+    const first = this.attempt();
+    const ok = await Promise.race([
+      first,
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), waitMs).unref()),
+    ]);
+    if (ok) return true;
+
+    this.logger.warn(`[db] not ready yet, retrying every ${Math.round(retryEveryMs / 1000)}s in the background`);
     this.retryTimer = setInterval(() => {
-      void this.attempt().then((ok) => {
-        if (ok && this.retryTimer) {
+      void this.attempt().then((done) => {
+        if (done && this.retryTimer) {
           clearInterval(this.retryTimer);
           this.retryTimer = null;
         }

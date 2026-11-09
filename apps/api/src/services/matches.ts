@@ -254,13 +254,13 @@ export class MatchService {
           applied.solved ? userId : decideWinner(match, match.mode === 'TOURNAMENT'),
           {
             onSettled: (settlement) => {
-                const mine = settlement.scores[userId];
-                result.isGameOver = true;
-                result.attemptsUsed = me.guesses.length;
-                result.durationMs = mine?.durationMs ?? settlement.durationMs;
-                if (mine) result.score = mine.score;
-                result.secretCode = [...match.secret];
-                this.realtime.emitToUser(userId, 'match:guess_result', { matchId, result });
+              const mine = settlement.scores[userId];
+              result.isGameOver = true;
+              result.attemptsUsed = me.guesses.length;
+              result.durationMs = mine?.durationMs ?? settlement.durationMs;
+              if (mine) result.score = mine.score;
+              result.secretCode = [...match.secret];
+              this.realtime.emitToUser(userId, 'match:guess_result', { matchId, result });
             },
           },
         );
