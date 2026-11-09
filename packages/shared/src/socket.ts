@@ -2,6 +2,7 @@ import type { MatchMode, UserRole } from './constants';
 import type { PegColor } from './constants';
 import type {
   BracketMatch,
+  GuessRecord,
   GuessResult,
   MatchGuessPayload,
   MatchRefPayload,
@@ -46,6 +47,14 @@ export interface MatchStartedPayload {
   roomCode?: string;
   tournamentId?: string;
   tournamentMatchId?: string;
+  /** Present only when state is re-sent after a reconnect. */
+  resume?: MatchResumeState;
+}
+
+export interface MatchResumeState {
+  yourGuesses: GuessRecord[];
+  /** Opponent progress rows (no colors). */
+  opponentRows: { row: number; exact: number; partial: number }[];
 }
 
 /** Telemetry about the opponent. Intentionally contains no colors. */
