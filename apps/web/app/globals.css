@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 224 30% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 30% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 30% 12%;
+    --primary: 252 83% 57%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 94%;
+    --secondary-foreground: 224 30% 20%;
+    --muted: 220 16% 94%;
+    --muted-foreground: 220 10% 40%;
+    --accent: 252 80% 95%;
+    --accent-foreground: 252 70% 35%;
+    --destructive: 0 78% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 70% 32%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 10%;
+    --border: 220 14% 86%;
+    --input: 220 14% 86%;
+    --ring: 252 83% 57%;
+    --radius: 0.75rem;
+    --board: 220 18% 90%;
+    --slot: 220 16% 82%;
+    --exact-peg: #111827;
+    --partial-peg: #f9fafb;
+    --peg-outline: rgba(15, 23, 42, 0.35);
+  }
+
+  .dark {
+    --background: 228 30% 7%;
+    --foreground: 220 20% 95%;
+    --card: 228 26% 10%;
+    --card-foreground: 220 20% 95%;
+    --popover: 228 26% 10%;
+    --popover-foreground: 220 20% 95%;
+    --primary: 252 90% 68%;
+    --primary-foreground: 228 40% 8%;
+    --secondary: 228 20% 16%;
+    --secondary-foreground: 220 20% 92%;
+    --muted: 228 20% 14%;
+    --muted-foreground: 220 12% 66%;
+    --accent: 252 40% 20%;
+    --accent-foreground: 252 90% 85%;
+    --destructive: 0 72% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 62% 45%;
+    --success-foreground: 142 80% 8%;
+    --warning: 43 96% 56%;
+    --warning-foreground: 40 90% 8%;
+    --border: 228 18% 20%;
+    --input: 228 18% 22%;
+    --ring: 252 90% 68%;
+    --board: 228 24% 12%;
+    --slot: 228 22% 8%;
+    --peg-outline: rgba(255, 255, 255, 0.28);
+  }
+
+  .hc {
+    --border: 0 0% 45%;
+    --input: 0 0% 55%;
+    --muted-foreground: 0 0% 38%;
+    --ring: 220 100% 40%;
+    --peg-outline: rgba(0, 0, 0, 0.9);
+  }
+  .dark.hc {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 4%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --muted-foreground: 0 0% 82%;
+    --ring: 50 100% 60%;
+    --slot: 0 0% 0%;
+    --peg-outline: rgba(255, 255, 255, 0.95);
+    --primary: 50 100% 60%;
+    --primary-foreground: 0 0% 0%;
+  }
+  .hc * {
+    border-color: hsl(var(--border));
+  }
+  .hc .peg-ring {
+    box-shadow: 0 0 0 2px var(--peg-outline);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at top, black 30%, transparent 75%);
+  }
+  .text-gradient {
+    background-image: linear-gradient(120deg, hsl(var(--primary)), #22d3ee 55%, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+}

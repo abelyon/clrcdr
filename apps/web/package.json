@@ -1,0 +1,48 @@
+{
+  "name": "@mastermind/web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CLRCDR Mastermind web client (Next.js App Router).",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "node .next/standalone/apps/web/server.js",
+    "start:next": "next start -p 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@mastermind/shared": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.545.0",
+    "next": "^15.5.9",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.9",
+    "jsdom": "^26.1.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
