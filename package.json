@@ -1,0 +1,25 @@
+{
+  "name": "clrcdr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CLRCDR Mastermind: realtime multiplayer code-breaking game (pnpm + Turborepo monorepo).",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "start": "turbo run start",
+    "db:generate": "pnpm --filter @mastermind/db db:generate",
+    "db:push": "pnpm --filter @mastermind/db db:push",
+    "db:seed": "pnpm --filter @mastermind/db db:seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.10",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,61 @@
+---
+description: CLRCDR Mastermind monorepo architecture, boundaries and conventions
+alwaysApply: true
+---
+
+# CLRCDR Mastermind: architecture
+
+pnpm + Turborepo monorepo. Node >= 20, TypeScript strict everywhere. Work lands on `main` (github.com/abelyon/clrcdr), deployed on Railway.
+
+## Layout
+
+```
+apps/
+  api/   @mastermind/api   Fastify/Express + Socket.io + ioredis (in-memory fallback)
+  web/   @mastermind/web   Next.js App Router + Tailwind + shadcn/ui + socket.io-client
+packages/
+  shared/ @mastermind/shared  Pure TS + Zod: game logic, constants, i18n, schemas, socket contracts, env URL helpers
+  db/     @mastermind/db      Drizzle ORM (PostgreSQL), migrations, seed, ensureDbReadyAndSeeded()
+docs/railway.md             Railway services / variable names (never values)
+```
+
+Dependency direction: `apps/* -> packages/db -> packages/shared`. `packages/shared` must stay pure (no Node-only imports, safe for the browser). `apps/web` must never import `@mastermind/db`.
+
+## Packages compile to CommonJS in `dist/`
+
+`@mastermind/shared` and `@mastermind/db` expose `main`/`types` pointing at `dist/`. Run `pnpm build` (turbo builds dependencies first via `dependsOn: ["^build"]`) before consuming. Next.js sets `transpilePackages: ["@mastermind/shared"]`.
+
+## Game rules and anti-cheat
+
+- 4 pegs, 10 attempts, game palette is `GAME_PALETTE` (6 colors; keys 1-6), all 8 colors exist in `ALL_PEG_COLORS`. Duplicates allowed in secret and guess.
+- `evaluateGuess` lives only in `@mastermind/shared`. The server is the single source of truth: guesses are evaluated server side.
+- The secret code is NEVER sent to a client while a game is active. Reveal `secretCode` only when `isGameOver === true`.
+- Opponent telemetry (`match:opponent_progress`) carries row index and exact/partial counts only, never colors.
+
+## Realtime
+
+All Socket.io events are typed through `ClientToServerEvents`, `ServerToClientEvents`, `InterServerEvents`, `SocketData` from `@mastermind/shared`. Add new events there first. Validate payloads with the Zod schemas from shared.
+
+## Data
+
+- Postgres is the system of record (Drizzle). Redis holds active games, rooms, queues and leaderboard sorted sets; the API must degrade to in-memory when Redis is unreachable.
+- Never hand-edit generated SQL in `packages/db/drizzle`; change `packages/db/src/schema.ts` and run `pnpm db:generate`.
+- The API calls `ensureDbReadyAndSeeded()` on startup (migrate + idempotent seed).
+
+## Railway connection rules
+
+- Prefer public proxy variables: `resolveDatabaseUrl()` (DATABASE_PUBLIC_URL, then proxy-domain built URL, then DATABASE_URL) and `resolveRedisUrl()` (REDIS_PUBLIC_URL, then REDIS_URL). Internal `*.railway.internal` hosts are unreachable outside Railway.
+- Never `railway add` Postgres/Redis; they already exist. Never commit secret values.
+
+## i18n
+
+Every user-visible string goes through the `en`/`hu` dictionaries in `@mastermind/shared` (`getDictionary`, `translate`). Add keys to `en` first; `hu` is type-checked against it.
+
+## Accessibility
+
+Colorblind mode renders each peg with its symbol/letter overlay (`PEG_META[color].symbol`). Support high contrast and dark/light themes.
+
+## Code style
+
+- No placeholders or TODOs. No narrating comments. Small focused modules.
+- Prefer Zod-validated inputs at every boundary (REST body, socket payload).
