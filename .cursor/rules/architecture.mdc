@@ -1,0 +1,31 @@
+---
+description: Mastermind web game architecture (monorepo layout, Railway infra, anti-cheat rule, conventions)
+alwaysApply: true
+---
+
+# Mastermind Web Game: Architecture
+
+Portfolio-grade Mastermind game in a **pnpm + Turborepo** monorepo, deployed on **Railway**. Repo: `abelyon/clrcdr`.
+
+## Rules for every change
+- Package scope is `@mastermind/*`. Use **pnpm only** (never npm/yarn). TypeScript **strict**.
+- Touch only the paths of your assigned task; open PRs against `main`.
+- Shared game logic, Zod schemas and Socket.io contracts live in `@mastermind/shared`. Never duplicate them in apps.
+- Turbo tasks: `build`, `dev`, `lint`, `typecheck`, `test` (run via `pnpm <task>` at the root).
+- The local agent (Windows, Railway CLI/MCP) is used only for Railway interactions.
+
+## Layout
+- `apps/web`: Next.js (App Router, TS), Tailwind CSS, shadcn/ui, lucide-react, socket.io-client, i18n (EN/HU).
+- `apps/api`: Node.js (Fastify or Express, TS) + socket.io server.
+- `packages/shared` (`@mastermind/shared`): TS types, Zod schemas, evaluation logic (`evaluateGuess`, `generateSecretCode`, `buildFeedback`, `calculateScore`), typed Socket.io contracts (`ServerToClientEvents`, `ClientToServerEvents`). Dual ESM/CJS build via tsup.
+- `packages/db` (`@mastermind/db`): PostgreSQL via Drizzle ORM (`drizzle-orm`, `drizzle-kit`, `pg`); script `db:push`.
+
+## Infrastructure (Railway)
+- **PostgreSQL**: users, settings, match history, tournament brackets.
+- **Redis** (`ioredis`): active 1V1 room state, 60s disconnect timers, All-Time and Weekly leaderboard Sorted Sets (`ZADD`, `ZREVRANGE`).
+
+## Strict anti-cheat rule
+**Secret codes are NEVER sent to the client** in Solo, 1V1 or Tournament modes. Codes are generated and verified only inside `apps/api`; the client receives only `{ exact, partial, isWin, isGameOver }` until the game ends. Opponent telemetry in 1V1 is limited to row index and peg counts (`OpponentProgress`); opponent colors are never transmitted. The secret may appear only in the game-end payload.
+
+## Pages
+`/rules`, `/leaderboard` (All-Time/Weekly), `/settings` (language, theme, audio, colorblind mode; localStorage + PostgreSQL), `/play` (solo, server-validated), `/1v1` (queue + invite links over Socket.io), `/tournaments` and `/admin/tournaments` (N-player single-elimination, automatic byes, self-referencing `matches` table with `nextMatchId`, `round`, `player1Id`, `player2Id`, `winnerId`; live bracket updates over Socket.io).
