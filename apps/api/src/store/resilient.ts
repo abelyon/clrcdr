@@ -11,11 +11,15 @@ import type { Store, StoreMode, ZEntry } from './types';
 export class ResilientStore implements Store {
   private readonly memory = new MemoryStore();
   private warnedAt = 0;
+  private readonly sweeper: NodeJS.Timeout;
 
   constructor(
     private readonly redis: Redis | null,
     private readonly logger: Logger,
-  ) {}
+  ) {
+    this.sweeper = setInterval(() => this.memory.sweep(), 60_000);
+    this.sweeper.unref();
+  }
 
   get mode(): StoreMode {
     return this.redis && this.redis.status === 'ready' ? 'redis' : 'memory';
@@ -188,6 +192,7 @@ export class ResilientStore implements Store {
   }
 
   async close() {
+    clearInterval(this.sweeper);
     if (this.redis) {
       try {
         await this.redis.quit();

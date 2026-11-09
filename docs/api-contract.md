@@ -136,8 +136,11 @@ Reconnect / abandonment:
 | Variable | Default | Purpose |
 | -------- | ------- | ------- |
 | `PORT` | `4000` | HTTP + Socket.io port (host `0.0.0.0`) |
-| `JWT_SECRET` | dev default (production should set it) | HMAC secret for tokens |
-| `WEB_ORIGIN` | permissive | Allowed CORS origins (comma separated) |
+| `JWT_SECRET` | dev default | HMAC secret for tokens. Set it in production (`NODE_ENV=production` without it uses a random per-boot secret, so sessions reset on restart) |
+| `WEB_ORIGIN` (alias `CORS_ORIGIN`) | permissive | Allowed CORS origins (comma separated, no trailing slash needed) |
 | `DATABASE_PUBLIC_URL` / `DATABASE_URL` | - | Postgres (see `docs/railway.md`) |
 | `REDIS_PUBLIC_URL` / `REDIS_URL` | in-memory fallback | Redis |
 | `MATCH_COUNTDOWN_MS` | `3000` | Delay before a match accepts guesses |
+| `JWT_EXPIRES_IN` | `7d` | Token lifetime |
+
+Without a reachable Postgres the API still starts: guest login, solo play, 1v1 between guests and `/health` work; auth, settings, leaderboard fallback and tournaments return `503 SERVICE_UNAVAILABLE` until the background retry (every 10 s) succeeds. Without Redis all state is kept in memory (single instance).

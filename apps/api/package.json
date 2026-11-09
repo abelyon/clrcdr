@@ -25,6 +25,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
+    "@electric-sql/pglite-socket": "^0.2.18",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.10.0",
     "socket.io-client": "^4.8.1",

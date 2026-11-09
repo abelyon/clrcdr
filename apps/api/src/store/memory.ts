@@ -155,6 +155,19 @@ export class MemoryStore implements Store {
     return this.read<string[]>(key)?.length ?? 0;
   }
 
+  /** Drops expired entries; reads already ignore them, this only reclaims memory. */
+  sweep(): number {
+    const now = this.now();
+    let removed = 0;
+    for (const [key, slot] of this.data) {
+      if (slot.expiresAt !== null && slot.expiresAt <= now) {
+        this.data.delete(key);
+        removed++;
+      }
+    }
+    return removed;
+  }
+
   async ping(): Promise<boolean> {
     return true;
   }

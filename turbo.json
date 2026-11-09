@@ -10,7 +10,10 @@
     "NEXT_PUBLIC_API_URL",
     "NEXT_PUBLIC_SOCKET_URL",
     "PORT",
-    "CORS_ORIGIN"
+    "CORS_ORIGIN",
+    "WEB_ORIGIN",
+    "MATCH_COUNTDOWN_MS",
+    "NODE_ENV"
   ],
   "tasks": {
     "build": {
