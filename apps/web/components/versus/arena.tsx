@@ -229,10 +229,10 @@ function PlayerHeader({
   return (
     <div className={cn('mx-auto mb-3 flex max-w-lg items-center justify-between gap-3 rounded-xl border px-4 py-3', highlight ? 'border-primary/40 bg-primary/5' : 'bg-card')}>
       <div className="min-w-0">
-        <p className="flex items-center gap-2 truncate text-lg font-bold">
+        <div className="flex items-center gap-2 truncate text-lg font-bold">
           {name}
           {user && <RoleBadge user={user} />}
-        </p>
+        </div>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
